@@ -156,6 +156,11 @@ code { font-family: monospace; }
   gap: 10px;
   margin-left: auto;
 }
+.desktop-actions-only {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 .header-btn-action {
   width: 145px;
   height: 38px;
@@ -266,7 +271,7 @@ code { font-family: monospace; }
 
 @media (max-width: 960px) {
   .header-nav-links { display: none; }
-  .desktop-actions-only { display: none; }
+  .desktop-actions-only { display: none !important; }
   .burger-btn { display: flex; }
 }
 
