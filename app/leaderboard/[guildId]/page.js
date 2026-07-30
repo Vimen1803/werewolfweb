@@ -14,15 +14,6 @@ export default async function LeaderboardPage({ params, searchParams }) {
   const activeType = sParams?.type || 'global';
   const session = await auth();
 
-  if (!session) {
-    return (
-      <main className="main-content" style={{ maxWidth: 480, textAlign: 'center', paddingTop: '6rem' }}>
-        <h1 className="page-title">Inicia sesión para ver la clasificación</h1>
-        <SignInButton className="btn btn-primary">Iniciar con Discord</SignInButton>
-      </main>
-    );
-  }
-
   const admin = isGuildAdmin(session, guildId);
   const activeEvent = await getActiveEvent(guildId);
 

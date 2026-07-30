@@ -22,15 +22,6 @@ export default async function StatsPage({ params }) {
   const { guildId, userId } = await params;
   const session = await auth();
 
-  if (!session) {
-    return (
-      <main className="main-content" style={{ maxWidth: 480, textAlign: 'center', paddingTop: '6rem' }}>
-        <h1 className="page-title">Inicia sesión para ver estadísticas</h1>
-        <SignInButton className="btn btn-primary">Iniciar con Discord</SignInButton>
-      </main>
-    );
-  }
-
   const admin = isGuildAdmin(session, guildId);
   const [player, discordUser, achStats] = await Promise.all([
     getPlayer(guildId, userId),
