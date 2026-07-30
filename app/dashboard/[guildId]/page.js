@@ -27,17 +27,25 @@ export default async function AdminOverviewPage({ params }) {
     activeEvent ? getEventLeaderboard(guildId, activeEvent.event_id, 1) : Promise.resolve([]),
   ]);
 
-  const total = globalStats.total_matches || 0;
-  const villagePct = pct(globalStats.village_won, total);
-  const wolvesPct = pct(globalStats.wolves_won, total);
-  const soloWon = (globalStats.white_wolf_won || 0) + (globalStats.tanner_won || 0) + (globalStats.lovers_won || 0);
+  const total = globalStats.total_played !== undefined ? globalStats.total_played : (globalStats.total_matches || 0);
+  const villagePct = pct(globalStats.bandos_won?.aldea !== undefined ? globalStats.bandos_won.aldea : (globalStats.village_won || 0), total);
+  const wolvesPct = pct(globalStats.bandos_won?.lobo !== undefined ? globalStats.bandos_won.lobo : (globalStats.wolves_won || 0), total);
+  const soloWon = (globalStats.bandos_won?.lobo_blanco !== undefined ? globalStats.bandos_won.lobo_blanco : (globalStats.white_wolf_won || 0)) + 
+                  (globalStats.bandos_won?.tanner !== undefined ? globalStats.bandos_won.tanner : (globalStats.tanner_won || 0)) + 
+                  (globalStats.lovers_won || 0);
   const soloPct = pct(soloWon, total);
 
   const specialCategories = [
-    { label: 'Curtidor', played: globalStats.tanner_matches, won: globalStats.tanner_won, color: 'var(--accent-solo)' },
-    { label: 'Lobo Blanco', played: globalStats.white_wolf_matches, won: globalStats.white_wolf_won, color: 'var(--accent-wolf)' },
-    { label: 'Amantes', played: globalStats.lovers_matches, won: globalStats.lovers_won, color: '#ec4899' },
+    { label: 'Curtidor', played: globalStats.bandos_played?.tanner !== undefined ? globalStats.bandos_played.tanner : (globalStats.tanner_matches || 0), won: globalStats.bandos_won?.tanner !== undefined ? globalStats.bandos_won.tanner : (globalStats.tanner_won || 0), color: 'var(--accent-solo)' },
+    { label: 'Lobo Blanco', played: globalStats.bandos_played?.lobo_blanco !== undefined ? globalStats.bandos_played.lobo_blanco : (globalStats.white_wolf_matches || 0), won: globalStats.bandos_won?.lobo_blanco !== undefined ? globalStats.bandos_won.lobo_blanco : (globalStats.white_wolf_won || 0), color: 'var(--accent-wolf)' },
+    { label: 'Amantes', played: globalStats.lovers_matches || 0, won: globalStats.lovers_won || 0, color: '#ec4899' },
   ];
+
+  const rolesPlayedMap = globalStats.rol_played || {};
+  const rolesWonMap = globalStats.rol_won || {};
+  const roleEntries = Object.entries(rolesPlayedMap)
+    .filter(([_, played]) => played > 0)
+    .sort((a, b) => b[1] - a[1]);
 
   return (
     <main className="main-content">
@@ -62,10 +70,10 @@ export default async function AdminOverviewPage({ params }) {
               </div>
               <div className="gs-split-labels">
                 <div style={{ width: `${villagePct}%`, display: 'flex', justifyContent: Number(villagePct) < 15 ? 'flex-start' : 'center' }}>
-                  <span style={{ color: 'var(--accent-village)', whiteSpace: 'nowrap' }}>Aldea: {globalStats.village_won} ({villagePct}%)</span>
+                  <span style={{ color: 'var(--accent-village)', whiteSpace: 'nowrap' }}>Aldea: {globalStats.bandos_won?.aldea !== undefined ? globalStats.bandos_won.aldea : (globalStats.village_won || 0)} ({villagePct}%)</span>
                 </div>
                 <div style={{ width: `${wolvesPct}%`, display: 'flex', justifyContent: 'center' }}>
-                  <span style={{ color: 'var(--accent-wolf)', whiteSpace: 'nowrap' }}>Lobos: {globalStats.wolves_won} ({wolvesPct}%)</span>
+                  <span style={{ color: 'var(--accent-wolf)', whiteSpace: 'nowrap' }}>Lobos: {globalStats.bandos_won?.lobo !== undefined ? globalStats.bandos_won.lobo : (globalStats.wolves_won || 0)} ({wolvesPct}%)</span>
                 </div>
                 <div style={{ width: `${soloPct}%`, display: 'flex', justifyContent: Number(soloPct) < 15 ? 'flex-end' : 'center' }}>
                   <span style={{ color: 'var(--accent-solo)', whiteSpace: 'nowrap' }}>Solitario: {soloWon} ({soloPct}%)</span>
@@ -107,12 +115,12 @@ export default async function AdminOverviewPage({ params }) {
         <h2 className="gs-section-title" style={{ marginTop: '2rem' }}>Partidas por Modo de Juego</h2>
         <div className="gs-mini-grid">
           {[
-            { label: 'Clásico', count: globalStats.classic_matches || 0, color: '#f1c40f' },
-            { label: 'Slow', count: globalStats.slow_matches || 0, color: '#3498db' },
-            { label: 'Silence', count: globalStats.silence_matches || 0, color: '#95a5a6' },
-            { label: 'Weather', count: globalStats.weather_matches || 0, color: '#e67e22' },
-            { label: 'Kaos', count: globalStats.kaos_matches || 0, color: '#9b59b6' },
-            { label: 'Credit', count: globalStats.credit_matches || 0, color: '#2ecc71' },
+            { label: 'Clásico', count: globalStats.gamemode_played?.classic !== undefined ? globalStats.gamemode_played.classic : (globalStats.classic_matches || 0), color: '#f1c40f' },
+            { label: 'Slow', count: globalStats.gamemode_played?.slow !== undefined ? globalStats.gamemode_played.slow : (globalStats.slow_matches || 0), color: '#3498db' },
+            { label: 'Silence', count: globalStats.gamemode_played?.silence !== undefined ? globalStats.gamemode_played.silence : (globalStats.silence_matches || 0), color: '#95a5a6' },
+            { label: 'Weather', count: globalStats.gamemode_played?.weather !== undefined ? globalStats.gamemode_played.weather : (globalStats.weather_matches || 0), color: '#e67e22' },
+            { label: 'Kaos', count: globalStats.gamemode_played?.kaos !== undefined ? globalStats.gamemode_played.kaos : (globalStats.kaos_matches || 0), color: '#9b59b6' },
+            { label: 'Credit', count: globalStats.gamemode_played?.credit !== undefined ? globalStats.gamemode_played.credit : (globalStats.credit_matches || 0), color: '#2ecc71' },
           ].map((c) => {
             const matches = c.count;
             const percentage = total > 0 ? ((matches / total) * 100).toFixed(1) : '0.0';
@@ -133,6 +141,41 @@ export default async function AdminOverviewPage({ params }) {
             );
           })}
         </div>
+
+        <h2 className="gs-section-title" style={{ marginTop: '2.5rem' }}>Rendimiento por Rol</h2>
+        <p className="stats-section-sub" style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.2rem', marginTop: '-0.5rem' }}>
+          Victorias y partidas jugadas con cada rol en este servidor.
+        </p>
+
+        {roleEntries.length === 0 ? (
+          <div className="card" style={{ padding: '2.5rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+            Aún no se han registrado partidas con ningún rol en este servidor.
+          </div>
+        ) : (
+          <div className="roles-stat-grid">
+            {roleEntries.map(([roleName, playedCount]) => {
+              const wonCount = rolesWonMap[roleName] || 0;
+              const roleWr = playedCount > 0 ? Math.round((wonCount / playedCount) * 100) : 0;
+              return (
+                <div key={roleName} className="role-stat-card">
+                  <div className="role-badge">{roleWr}% WINRATE</div>
+                  <div className="role-stat-name">{roleName}</div>
+                  <div className="role-stat-metrics">
+                    <div className="metric-box">
+                      <span className="metric-num win-color">{wonCount}</span>
+                      <span className="metric-label">WIN</span>
+                    </div>
+                    <div className="metric-divider">|</div>
+                    <div className="metric-box">
+                      <span className="metric-num played-color">{playedCount}</span>
+                      <span className="metric-label">PLAYED</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* Clasificaciones y XP */}
@@ -175,8 +218,95 @@ export default async function AdminOverviewPage({ params }) {
         .gs-mini-num { display: block; font-size: 1.2rem; font-weight: 800; font-family: var(--font-display); color: var(--text-primary); }
         .gs-mini-sub { display: block; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-top: 2px; }
         .sum-sub { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
+        
+        .roles-stat-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+          gap: 12px;
+        }
+        .role-stat-card {
+          background: #141519;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 8px;
+          padding: 10px 8px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: space-between;
+          min-height: 120px;
+          transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .role-stat-card:hover {
+          border-color: #eab308;
+          box-shadow: 0 0 12px rgba(234, 179, 8, 0.15);
+          transform: translateY(-2px);
+        }
+        .role-badge {
+          background: #eab308;
+          color: #000000;
+          font-weight: 800;
+          font-size: 0.65rem;
+          padding: 3px 7px;
+          border-radius: 4px;
+          letter-spacing: 0.02em;
+          margin-bottom: 8px;
+          text-transform: uppercase;
+          line-height: 1;
+        }
+        .role-stat-name {
+          font-weight: 700;
+          font-size: 0.88rem;
+          color: #ffffff;
+          text-align: center;
+          margin-bottom: 10px;
+          word-break: break-word;
+          line-height: 1.2;
+        }
+        .role-stat-metrics {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          width: 100%;
+        }
+        .metric-box {
+          background: none;
+          border: none;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          min-width: 30px;
+        }
+        .metric-num {
+          font-size: 1.2rem;
+          font-weight: 800;
+          line-height: 1;
+        }
+        .win-color {
+          color: #eab308;
+        }
+        .played-color {
+          color: #ffffff;
+        }
+        .metric-label {
+          font-size: 0.58rem;
+          color: var(--text-muted);
+          font-weight: 700;
+          margin-top: 3px;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+        }
+        .metric-divider {
+          color: rgba(255, 255, 255, 0.2);
+          font-size: 0.95rem;
+          font-weight: 300;
+          margin-bottom: 10px;
+          user-select: none;
+        }
+
         @media (max-width: 700px) {
           .gs-mini-grid { grid-template-columns: 1fr; }
+          .roles-stat-grid { grid-template-columns: repeat(2, 1fr); }
         }
       `}</style>
     </main>
