@@ -22,7 +22,7 @@ export default function Navbar() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
-  const isDashboardPage = pathname?.startsWith('/dashboard');
+  const isAppPage = pathname?.startsWith('/dashboard') || pathname?.startsWith('/leaderboard') || pathname?.startsWith('/config') || pathname?.startsWith('/stats');
 
   function handleDashboardClick() {
     if (status === 'authenticated') {
@@ -80,8 +80,8 @@ export default function Navbar() {
               <span className="username-text">{session.username}</span>
             </button>
           ) : (
-            <button className="header-btn-action btn-default-header" onClick={isDashboardPage ? () => signIn('discord') : handleDashboardClick}>
-              {isDashboardPage ? 'Login' : 'Dashboard'}
+            <button className="header-btn-action btn-default-header" onClick={isAppPage ? () => signIn('discord') : handleDashboardClick}>
+              {isAppPage ? 'Login' : 'Dashboard'}
             </button>
           )}
 
@@ -113,8 +113,8 @@ export default function Navbar() {
             <Link href="/proximamente" onClick={() => setOpen(false)} className="header-btn-action btn-invite-header full-width">
               Invitar Bot
             </Link>
-            <button className="header-btn-action btn-default-header full-width" onClick={() => { setOpen(false); isDashboardPage ? signIn('discord') : handleDashboardClick(); }}>
-              {isDashboardPage ? 'Login' : 'Dashboard'}
+            <button className="header-btn-action btn-default-header full-width" onClick={() => { setOpen(false); isAppPage ? signIn('discord') : handleDashboardClick(); }}>
+              {isAppPage ? 'Login' : 'Dashboard'}
             </button>
           </div>
         </div>

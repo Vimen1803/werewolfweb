@@ -6,11 +6,6 @@ import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
-function pct(part, total) {
-  if (!total) return '0.00';
-  return ((part / total) * 100).toFixed(2);
-}
-
 export default async function AdminOverviewPage({ params }) {
   const { guildId } = await params;
   const session = await auth();
@@ -48,11 +43,6 @@ export default async function AdminOverviewPage({ params }) {
   const loversWon = globalStats.lovers_won || 0;
   const loversWr = loversPlayed > 0 ? Math.round((loversWon / loversPlayed) * 100) : 0;
 
-  const villagePct = pct(villageWon, total);
-  const wolvesPct = pct(wolfWon, total);
-  const soloWon = solitarioWon + loversWon;
-  const soloPct = pct(soloWon, total);
-
   const rolesPlayedMap = globalStats.rol_played || {};
   const rolesWonMap = globalStats.rol_won || {};
   const roleEntries = Object.entries(rolesPlayedMap)
@@ -75,42 +65,9 @@ export default async function AdminOverviewPage({ params }) {
     <main className="main-content">
       <AdminNav guildId={guildId} active="overview" isAdmin={admin} />
 
-      {/* Estadísticas globales de partidas (ww_global_stats) */}
       <section className="gs-section">
-        <h2 className="gs-section-title">Estadísticas de partidas</h2>
-
-        <div className="card gs-totals-card">
-          <div className="gs-total-row">
-            <span>Partidas jugadas en este servidor</span>
-            <strong>{total.toLocaleString('es-ES')}</strong>
-          </div>
-
-          {total > 0 ? (
-            <>
-              <div className="gs-split-bar">
-                <div className="gs-split-village" style={{ width: `${villagePct}%` }} />
-                <div className="gs-split-wolves" style={{ width: `${wolvesPct}%` }} />
-                <div className="gs-split-solo" style={{ width: `${soloPct}%` }} />
-              </div>
-              <div className="gs-split-labels">
-                <div style={{ width: `${villagePct}%`, display: 'flex', justifyContent: Number(villagePct) < 15 ? 'flex-start' : 'center' }}>
-                  <span style={{ color: 'var(--accent-village)', whiteSpace: 'nowrap' }}>Aldea: {villageWon} ({villagePct}%)</span>
-                </div>
-                <div style={{ width: `${wolvesPct}%`, display: 'flex', justifyContent: 'center' }}>
-                  <span style={{ color: 'var(--accent-wolf)', whiteSpace: 'nowrap' }}>Lobos: {wolfWon} ({wolvesPct}%)</span>
-                </div>
-                <div style={{ width: `${soloPct}%`, display: 'flex', justifyContent: Number(soloPct) < 15 ? 'flex-end' : 'center' }}>
-                  <span style={{ color: 'var(--accent-solo)', whiteSpace: 'nowrap' }}>Solitario: {soloWon} ({soloPct}%)</span>
-                </div>
-              </div>
-            </>
-          ) : (
-            <p className="hint" style={{ marginTop: 10 }}>Todavía no se ha registrado ninguna partida en este servidor.</p>
-          )}
-        </div>
-
         {/* Rendimiento por Bando */}
-        <h2 className="stats-section-title" style={{ marginTop: '2rem' }}>Rendimiento por Bando</h2>
+        <h2 className="stats-section-title">Rendimiento por Bando</h2>
         <div className="bando-grid">
           <div className="bando-card">
             <div className="bando-header">
@@ -291,14 +248,6 @@ export default async function AdminOverviewPage({ params }) {
       <style>{`
         .gs-section { margin-bottom: 2rem; }
         .gs-section-title { font-family: var(--font-display); font-size: 1.05rem; margin-bottom: 1rem; color: var(--text-primary); }
-        .gs-totals-card { padding: 1.4rem 1.6rem; margin-bottom: 1rem; }
-        .gs-total-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 14px; }
-        .gs-total-row strong { font-size: 1.4rem; font-family: var(--font-display); color: var(--text-primary); }
-        .gs-split-bar { display: flex; width: 100%; height: 10px; border-radius: 999px; overflow: hidden; background: var(--bg-elevated); }
-        .gs-split-village { background: var(--accent-village); }
-        .gs-split-wolves { background: var(--accent-wolf); }
-        .gs-split-solo { background: var(--accent-solo); }
-        .gs-split-labels { display: flex; font-size: 0.78rem; font-weight: 600; margin-top: 8px; width: 100%; }
         .sum-sub { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
 
         .stats-section-title {
