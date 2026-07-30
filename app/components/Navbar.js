@@ -22,6 +22,8 @@ export default function Navbar() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
+  const isDashboardPage = pathname?.startsWith('/dashboard');
+
   function handleDashboardClick() {
     if (status === 'authenticated') {
       router.push('/dashboard');
@@ -78,8 +80,8 @@ export default function Navbar() {
               <span className="username-text">{session.username}</span>
             </button>
           ) : (
-            <button className="header-btn-action btn-default-header" onClick={handleDashboardClick}>
-              Dashboard
+            <button className="header-btn-action btn-default-header" onClick={isDashboardPage ? () => signIn('discord') : handleDashboardClick}>
+              {isDashboardPage ? 'Login' : 'Dashboard'}
             </button>
           )}
 
@@ -111,8 +113,8 @@ export default function Navbar() {
             <Link href="/proximamente" onClick={() => setOpen(false)} className="header-btn-action btn-invite-header full-width">
               Invitar Bot
             </Link>
-            <button className="header-btn-action btn-default-header full-width" onClick={() => { setOpen(false); handleDashboardClick(); }}>
-              Dashboard
+            <button className="header-btn-action btn-default-header full-width" onClick={() => { setOpen(false); isDashboardPage ? signIn('discord') : handleDashboardClick(); }}>
+              {isDashboardPage ? 'Login' : 'Dashboard'}
             </button>
           </div>
         </div>

@@ -470,7 +470,11 @@ export default async function AdminOverviewPage({ params }) {
         @media (max-width: 600px) {
           .bando-grid { grid-template-columns: 1fr; }
           .modo-grid { grid-template-columns: 1fr; }
-          .roles-stat-grid { grid-template-columns: repeat(2, 1fr); }
+          .roles-stat-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+          .role-stat-card { padding: 8px 6px; min-height: 100px; }
+          .role-badge { font-size: 0.6rem; padding: 2px 5px; }
+          .role-stat-name { font-size: 0.78rem; }
+          .metric-num { font-size: 1rem; }
         }
       `}</style>
     </main>
