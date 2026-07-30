@@ -423,8 +423,9 @@ export default async function StatsPage({ params }) {
 
         .roles-stat-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(135px, 200px));
           gap: 12px;
+          justify-content: center;
         }
         .role-stat-card {
           background: #141519;
