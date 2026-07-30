@@ -44,8 +44,10 @@ export default async function AdminOverviewPage({ params }) {
   const rolesPlayedMap = globalStats.rol_played || {};
   const rolesWonMap = globalStats.rol_won || {};
   const roleEntries = Object.entries(rolesPlayedMap)
-    .filter(([_, played]) => played > 0)
-    .sort((a, b) => b[1] - a[1]);
+    .sort((a, b) => {
+      if (b[1] !== a[1]) return b[1] - a[1];
+      return a[0].localeCompare(b[0]);
+    });
 
   return (
     <main className="main-content">
