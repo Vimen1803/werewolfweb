@@ -31,7 +31,7 @@ export default function DocIndexPage() {
       <section className="hero-landing fade-in">
         <div className="hero-badge-container">
           <Link href="/doc/changelog" className="hero-simple-badge">
-            <span>NUEVO — LOGROS, EVENTOS Y HEREJE →</span>
+            <span>NUEVO — MODOS DE JUEGO Y LOBO KAMIKAZE →</span>
           </Link>
         </div>
 
