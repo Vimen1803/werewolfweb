@@ -28,18 +28,30 @@ export default async function AdminOverviewPage({ params }) {
   ]);
 
   const total = globalStats.total_played !== undefined ? globalStats.total_played : (globalStats.total_matches || 0);
-  const villagePct = pct(globalStats.bandos_won?.aldea !== undefined ? globalStats.bandos_won.aldea : (globalStats.village_won || 0), total);
-  const wolvesPct = pct(globalStats.bandos_won?.lobo !== undefined ? globalStats.bandos_won.lobo : (globalStats.wolves_won || 0), total);
-  const soloWon = (globalStats.bandos_won?.lobo_blanco !== undefined ? globalStats.bandos_won.lobo_blanco : (globalStats.white_wolf_won || 0)) + 
-                  (globalStats.bandos_won?.tanner !== undefined ? globalStats.bandos_won.tanner : (globalStats.tanner_won || 0)) + 
-                  (globalStats.lovers_won || 0);
-  const soloPct = pct(soloWon, total);
+  const villagePlayed = globalStats.bandos_played?.aldea ?? total;
+  const villageWon = globalStats.bandos_won?.aldea ?? (globalStats.village_won || 0);
+  const villageWr = villagePlayed > 0 ? Math.round((villageWon / villagePlayed) * 100) : 0;
 
-  const specialCategories = [
-    { label: 'Curtidor', played: globalStats.bandos_played?.tanner !== undefined ? globalStats.bandos_played.tanner : (globalStats.tanner_matches || 0), won: globalStats.bandos_won?.tanner !== undefined ? globalStats.bandos_won.tanner : (globalStats.tanner_won || 0), color: 'var(--accent-solo)' },
-    { label: 'Lobo Blanco', played: globalStats.bandos_played?.lobo_blanco !== undefined ? globalStats.bandos_played.lobo_blanco : (globalStats.white_wolf_matches || 0), won: globalStats.bandos_won?.lobo_blanco !== undefined ? globalStats.bandos_won.lobo_blanco : (globalStats.white_wolf_won || 0), color: 'var(--accent-wolf)' },
-    { label: 'Amantes', played: globalStats.lovers_matches || 0, won: globalStats.lovers_won || 0, color: '#ec4899' },
-  ];
+  const wolfPlayed = globalStats.bandos_played?.lobo ?? total;
+  const wolfWon = globalStats.bandos_won?.lobo ?? (globalStats.wolves_won || 0);
+  const wolfWr = wolfPlayed > 0 ? Math.round((wolfWon / wolfPlayed) * 100) : 0;
+
+  const tannerPlayed = globalStats.bandos_played?.tanner ?? (globalStats.tanner_matches || 0);
+  const tannerWon = globalStats.bandos_won?.tanner ?? (globalStats.tanner_won || 0);
+  const wbPlayed = globalStats.bandos_played?.lobo_blanco ?? (globalStats.white_wolf_matches || 0);
+  const wbWon = globalStats.bandos_won?.lobo_blanco ?? (globalStats.white_wolf_won || 0);
+  const solitarioPlayed = tannerPlayed + wbPlayed;
+  const solitarioWon = tannerWon + wbWon;
+  const solitarioWr = solitarioPlayed > 0 ? Math.round((solitarioWon / solitarioPlayed) * 100) : 0;
+
+  const loversPlayed = globalStats.lovers_matches || 0;
+  const loversWon = globalStats.lovers_won || 0;
+  const loversWr = loversPlayed > 0 ? Math.round((loversWon / loversPlayed) * 100) : 0;
+
+  const villagePct = pct(villageWon, total);
+  const wolvesPct = pct(wolfWon, total);
+  const soloWon = solitarioWon + loversWon;
+  const soloPct = pct(soloWon, total);
 
   const rolesPlayedMap = globalStats.rol_played || {};
   const rolesWonMap = globalStats.rol_won || {};
@@ -48,6 +60,16 @@ export default async function AdminOverviewPage({ params }) {
       if (b[1] !== a[1]) return b[1] - a[1];
       return a[0].localeCompare(b[0]);
     });
+
+  // Gamemodes
+  const gamemodes = [
+    { name: 'Clásico', icon: '🐺', played: globalStats.gamemode_played?.classic ?? (globalStats.classic_matches || 0), color: '#f1c40f' },
+    { name: 'Slow', icon: '🐌', played: globalStats.gamemode_played?.slow ?? (globalStats.slow_matches || 0), color: '#3498db' },
+    { name: 'Silence', icon: '🤫', played: globalStats.gamemode_played?.silence ?? (globalStats.silence_matches || 0), color: '#95a5a6' },
+    { name: 'Weather', icon: '🌫️', played: globalStats.gamemode_played?.weather ?? (globalStats.weather_matches || 0), color: '#e67e22' },
+    { name: 'Kaos', icon: '🎭', played: globalStats.gamemode_played?.kaos ?? (globalStats.kaos_matches || 0), color: '#9b59b6' },
+    { name: 'Credit', icon: '💳', played: globalStats.gamemode_played?.credit ?? (globalStats.credit_matches || 0), color: '#2ecc71' },
+  ];
 
   return (
     <main className="main-content">
@@ -72,10 +94,10 @@ export default async function AdminOverviewPage({ params }) {
               </div>
               <div className="gs-split-labels">
                 <div style={{ width: `${villagePct}%`, display: 'flex', justifyContent: Number(villagePct) < 15 ? 'flex-start' : 'center' }}>
-                  <span style={{ color: 'var(--accent-village)', whiteSpace: 'nowrap' }}>Aldea: {globalStats.bandos_won?.aldea !== undefined ? globalStats.bandos_won.aldea : (globalStats.village_won || 0)} ({villagePct}%)</span>
+                  <span style={{ color: 'var(--accent-village)', whiteSpace: 'nowrap' }}>Aldea: {villageWon} ({villagePct}%)</span>
                 </div>
                 <div style={{ width: `${wolvesPct}%`, display: 'flex', justifyContent: 'center' }}>
-                  <span style={{ color: 'var(--accent-wolf)', whiteSpace: 'nowrap' }}>Lobos: {globalStats.bandos_won?.lobo !== undefined ? globalStats.bandos_won.lobo : (globalStats.wolves_won || 0)} ({wolvesPct}%)</span>
+                  <span style={{ color: 'var(--accent-wolf)', whiteSpace: 'nowrap' }}>Lobos: {wolfWon} ({wolvesPct}%)</span>
                 </div>
                 <div style={{ width: `${soloPct}%`, display: 'flex', justifyContent: Number(soloPct) < 15 ? 'flex-end' : 'center' }}>
                   <span style={{ color: 'var(--accent-solo)', whiteSpace: 'nowrap' }}>Solitario: {soloWon} ({soloPct}%)</span>
@@ -87,58 +109,122 @@ export default async function AdminOverviewPage({ params }) {
           )}
         </div>
 
-        <div className="gs-mini-grid">
-          {specialCategories.map((c) => {
-            const played = c.played || 0;
-            const won = c.won || 0;
-            const wr = pct(won, played);
-            return (
-              <div key={c.label} className="card gs-mini-card">
-                <span className="gs-mini-label" style={{ color: c.color }}>{c.label}</span>
-                <div className="gs-mini-stats">
-                  <div>
-                    <span className="gs-mini-num">{played}</span>
-                    <span className="gs-mini-sub">partidas</span>
-                  </div>
-                  <div>
-                    <span className="gs-mini-num">{won}</span>
-                    <span className="gs-mini-sub">victorias</span>
-                  </div>
-                  <div>
-                    <span className="gs-mini-num">{wr}%</span>
-                    <span className="gs-mini-sub">winrate</span>
-                  </div>
-                </div>
+        {/* Rendimiento por Bando */}
+        <h2 className="stats-section-title" style={{ marginTop: '2rem' }}>Rendimiento por Bando</h2>
+        <div className="bando-grid">
+          <div className="bando-card">
+            <div className="bando-header">
+              <span className="bando-icon" style={{ color: '#22c55e' }}>🏡</span>
+              <span>Aldea</span>
+            </div>
+            <div className="bando-stats">
+              <div className="bando-stat-col">
+                <span className="bando-label">PARTIDAS</span>
+                <span className="bando-val">{villagePlayed}</span>
               </div>
-            );
-          })}
+              <div className="bando-stat-col">
+                <span className="bando-label">WINRATE</span>
+                <span className="bando-val" style={{ color: '#22c55e' }}>{villageWr}%</span>
+              </div>
+              <div className="bando-stat-col">
+                <span className="bando-label">VICTORIAS</span>
+                <span className="bando-val" style={{ color: '#22c55e' }}>{villageWon}</span>
+              </div>
+            </div>
+            <div className="bando-bar" style={{ background: '#22c55e' }} />
+          </div>
+
+          <div className="bando-card">
+            <div className="bando-header">
+              <span className="bando-icon" style={{ color: '#ef4444' }}>🌙</span>
+              <span>Lobos</span>
+            </div>
+            <div className="bando-stats">
+              <div className="bando-stat-col">
+                <span className="bando-label">PARTIDAS</span>
+                <span className="bando-val">{wolfPlayed}</span>
+              </div>
+              <div className="bando-stat-col">
+                <span className="bando-label">WINRATE</span>
+                <span className="bando-val" style={{ color: '#ef4444' }}>{wolfWr}%</span>
+              </div>
+              <div className="bando-stat-col">
+                <span className="bando-label">VICTORIAS</span>
+                <span className="bando-val" style={{ color: '#ef4444' }}>{wolfWon}</span>
+              </div>
+            </div>
+            <div className="bando-bar" style={{ background: '#ef4444' }} />
+          </div>
+
+          <div className="bando-card">
+            <div className="bando-header">
+              <span className="bando-icon" style={{ color: '#a855f7' }}>✦</span>
+              <span>Solitario</span>
+            </div>
+            <div className="bando-stats">
+              <div className="bando-stat-col">
+                <span className="bando-label">PARTIDAS</span>
+                <span className="bando-val">{solitarioPlayed}</span>
+              </div>
+              <div className="bando-stat-col">
+                <span className="bando-label">WINRATE</span>
+                <span className="bando-val" style={{ color: '#a855f7' }}>{solitarioWr}%</span>
+              </div>
+              <div className="bando-stat-col">
+                <span className="bando-label">VICTORIAS</span>
+                <span className="bando-val" style={{ color: '#a855f7' }}>{solitarioWon}</span>
+              </div>
+            </div>
+            <div className="bando-bar" style={{ background: '#a855f7' }} />
+          </div>
+
+          <div className="bando-card">
+            <div className="bando-header">
+              <span className="bando-icon" style={{ color: '#ec4899' }}>💗</span>
+              <span>Amantes</span>
+            </div>
+            <div className="bando-stats">
+              <div className="bando-stat-col">
+                <span className="bando-label">PARTIDAS</span>
+                <span className="bando-val">{loversPlayed}</span>
+              </div>
+              <div className="bando-stat-col">
+                <span className="bando-label">WINRATE</span>
+                <span className="bando-val" style={{ color: '#ec4899' }}>{loversWr}%</span>
+              </div>
+              <div className="bando-stat-col">
+                <span className="bando-label">VICTORIAS</span>
+                <span className="bando-val" style={{ color: '#ec4899' }}>{loversWon}</span>
+              </div>
+            </div>
+            <div className="bando-bar" style={{ background: '#ec4899' }} />
+          </div>
         </div>
 
-        <h2 className="gs-section-title" style={{ marginTop: '2rem' }}>Partidas por Modo de Juego</h2>
-        <div className="gs-mini-grid">
-          {[
-            { label: 'Clásico', count: globalStats.gamemode_played?.classic !== undefined ? globalStats.gamemode_played.classic : (globalStats.classic_matches || 0), color: '#f1c40f' },
-            { label: 'Slow', count: globalStats.gamemode_played?.slow !== undefined ? globalStats.gamemode_played.slow : (globalStats.slow_matches || 0), color: '#3498db' },
-            { label: 'Silence', count: globalStats.gamemode_played?.silence !== undefined ? globalStats.gamemode_played.silence : (globalStats.silence_matches || 0), color: '#95a5a6' },
-            { label: 'Weather', count: globalStats.gamemode_played?.weather !== undefined ? globalStats.gamemode_played.weather : (globalStats.weather_matches || 0), color: '#e67e22' },
-            { label: 'Kaos', count: globalStats.gamemode_played?.kaos !== undefined ? globalStats.gamemode_played.kaos : (globalStats.kaos_matches || 0), color: '#9b59b6' },
-            { label: 'Credit', count: globalStats.gamemode_played?.credit !== undefined ? globalStats.gamemode_played.credit : (globalStats.credit_matches || 0), color: '#2ecc71' },
-          ].map((c) => {
-            const matches = c.count;
-            const percentage = total > 0 ? ((matches / total) * 100).toFixed(1) : '0.0';
+        {/* Rendimiento por Modo */}
+        <h2 className="stats-section-title" style={{ marginTop: '2.5rem' }}>Rendimiento por Modo</h2>
+        <p className="stats-section-sub">Partidas jugadas en cada modo de juego en este servidor.</p>
+        <div className="modo-grid">
+          {gamemodes.map((m) => {
+            const played = m.played || 0;
+            const percentage = total > 0 ? ((played / total) * 100).toFixed(1) : '0.0';
             return (
-              <div key={c.label} className="card gs-mini-card" style={{ borderLeft: `4px solid ${c.color}` }}>
-                <span className="gs-mini-label" style={{ color: c.color }}>{c.label}</span>
-                <div className="gs-mini-stats">
-                  <div>
-                    <span className="gs-mini-num">{matches}</span>
-                    <span className="gs-mini-sub">partidas</span>
+              <div key={m.name} className="bando-card">
+                <div className="bando-header">
+                  <span className="bando-icon" style={{ color: m.color }}>{m.icon}</span>
+                  <span>{m.name}</span>
+                </div>
+                <div className="bando-stats">
+                  <div className="bando-stat-col">
+                    <span className="bando-label">PARTIDAS</span>
+                    <span className="bando-val">{played}</span>
                   </div>
-                  <div>
-                    <span className="gs-mini-num">{percentage}%</span>
-                    <span className="gs-mini-sub">del total</span>
+                  <div className="bando-stat-col">
+                    <span className="bando-label">% DEL TOTAL</span>
+                    <span className="bando-val" style={{ color: m.color }}>{percentage}%</span>
                   </div>
                 </div>
+                <div className="bando-bar" style={{ background: m.color }} />
               </div>
             );
           })}
@@ -213,14 +299,85 @@ export default async function AdminOverviewPage({ params }) {
         .gs-split-wolves { background: var(--accent-wolf); }
         .gs-split-solo { background: var(--accent-solo); }
         .gs-split-labels { display: flex; font-size: 0.78rem; font-weight: 600; margin-top: 8px; width: 100%; }
-        .gs-mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-        .gs-mini-card { padding: 1.1rem 1.2rem; display: flex; flex-direction: column; gap: 10px; }
-        .gs-mini-label { font-size: 0.8rem; font-weight: 700; }
-        .gs-mini-stats { display: flex; justify-content: space-between; }
-        .gs-mini-num { display: block; font-size: 1.2rem; font-weight: 800; font-family: var(--font-display); color: var(--text-primary); }
-        .gs-mini-sub { display: block; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-top: 2px; }
         .sum-sub { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
-        
+
+        .stats-section-title {
+          font-family: var(--font-display);
+          font-size: 1.15rem;
+          color: var(--text-primary);
+          margin-bottom: 1rem;
+          text-transform: uppercase;
+          letter-spacing: 0.02em;
+        }
+        .stats-section-sub {
+          color: var(--text-secondary);
+          font-size: 0.88rem;
+          margin-bottom: 1.25rem;
+        }
+
+        .bando-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 16px;
+        }
+        .modo-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 16px;
+        }
+        .bando-card {
+          background: var(--bg-secondary);
+          border: 1px solid var(--border-subtle);
+          border-radius: 10px;
+          padding: 18px 20px 22px;
+          position: relative;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+        .bando-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-weight: 700;
+          font-size: 1.1rem;
+          color: #ffffff;
+          margin-bottom: 18px;
+        }
+        .bando-icon {
+          font-size: 1.2rem;
+        }
+        .bando-stats {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+        }
+        .bando-stat-col {
+          display: flex;
+          flex-direction: column;
+        }
+        .bando-label {
+          font-size: 0.65rem;
+          letter-spacing: 0.06em;
+          color: var(--text-muted);
+          font-weight: 700;
+          margin-bottom: 4px;
+        }
+        .bando-val {
+          font-size: 1.45rem;
+          font-weight: 800;
+          color: #ffffff;
+          line-height: 1.1;
+        }
+        .bando-bar {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+        }
+
         .roles-stat-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
@@ -306,8 +463,13 @@ export default async function AdminOverviewPage({ params }) {
           user-select: none;
         }
 
-        @media (max-width: 700px) {
-          .gs-mini-grid { grid-template-columns: 1fr; }
+        @media (max-width: 900px) {
+          .bando-grid { grid-template-columns: repeat(2, 1fr); }
+          .modo-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+          .bando-grid { grid-template-columns: 1fr; }
+          .modo-grid { grid-template-columns: 1fr; }
           .roles-stat-grid { grid-template-columns: repeat(2, 1fr); }
         }
       `}</style>
