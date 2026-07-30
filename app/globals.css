@@ -266,6 +266,7 @@ code { font-family: monospace; }
 
 @media (max-width: 960px) {
   .header-nav-links { display: none; }
+  .desktop-actions-only { display: none; }
   .burger-btn { display: flex; }
 }
 
