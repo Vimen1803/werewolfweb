@@ -441,6 +441,83 @@ export default async function GeneralStatsPage() {
           color: #ff7f50;
         }
         
+        .stats-section-title {
+          font-family: var(--font-display);
+          font-size: 1.15rem;
+          color: var(--text-primary);
+          margin-bottom: 1rem;
+          text-transform: uppercase;
+          letter-spacing: 0.02em;
+        }
+        .stats-section-sub {
+          color: var(--text-secondary);
+          font-size: 0.88rem;
+          margin-bottom: 1.25rem;
+        }
+
+        .bando-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 16px;
+        }
+        .modo-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 16px;
+        }
+        .bando-card {
+          background: var(--bg-secondary);
+          border: 1px solid var(--border-subtle);
+          border-radius: 10px;
+          padding: 18px 20px 22px;
+          position: relative;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+        .bando-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-weight: 700;
+          font-size: 1.1rem;
+          color: #ffffff;
+          margin-bottom: 18px;
+        }
+        .bando-icon {
+          font-size: 1.2rem;
+        }
+        .bando-stats {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+        }
+        .bando-stat-col {
+          display: flex;
+          flex-direction: column;
+        }
+        .bando-label {
+          font-size: 0.65rem;
+          letter-spacing: 0.06em;
+          color: var(--text-muted);
+          font-weight: 700;
+          margin-bottom: 4px;
+        }
+        .bando-val {
+          font-size: 1.45rem;
+          font-weight: 800;
+          color: #ffffff;
+          line-height: 1.1;
+        }
+        .bando-bar {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+        }
+        
         /* SPLIT BAR DE WINRATE GLOBAL */
         .gs-totals-card {
           padding: 1.4rem 1.6rem;
