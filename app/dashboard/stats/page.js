@@ -38,93 +38,173 @@ export default async function GeneralStatsPage() {
   }
 
   // Cálculo de winrates globales de la comunidad
-  const gw = stats.globalWinrates || { totalMatches: 0, villageWon: 0, wolvesWon: 0, soloWon: 0 };
+  const gw = stats.globalWinrates || {
+    totalMatches: 0,
+    villagePlayed: 0, villageWon: 0,
+    wolvesPlayed: 0, wolvesWon: 0,
+    whiteWolfPlayed: 0, whiteWolfWon: 0,
+    tannerPlayed: 0, tannerWon: 0,
+    loversPlayed: 0, loversWon: 0,
+    classicMatches: 0, slowMatches: 0, silenceMatches: 0,
+    weatherMatches: 0, kaosMatches: 0, creditMatches: 0
+  };
   const total = gw.totalMatches;
   
-  const getPct = (val) => {
-    if (total === 0) return "0.00";
-    return ((val / total) * 100).toFixed(2);
-  };
-  
-  const villagePct = getPct(gw.villageWon);
-  const wolvesPct = getPct(gw.wolvesWon);
-  const soloPct = getPct(gw.soloWon);
+  const villageWr = gw.villagePlayed > 0 ? Math.round((gw.villageWon / gw.villagePlayed) * 100) : 0;
+  const wolvesWr = gw.wolvesPlayed > 0 ? Math.round((gw.wolvesWon / gw.wolvesPlayed) * 100) : 0;
+  const solitarioPlayed = (gw.tannerPlayed || 0) + (gw.white_wolfPlayed || 0);
+  const solitarioWon = (gw.tannerWon || 0) + (gw.white_wolf_won || 0);
+  const solitarioWr = solitarioPlayed > 0 ? Math.round((solitarioWon / solitarioPlayed) * 100) : 0;
+  const loversWr = gw.loversPlayed > 0 ? Math.round((gw.loversWon / gw.loversPlayed) * 100) : 0;
 
   return (
     <main className="main-content">
       {/* Cabecera y botón de retorno */}
-      <div style={{ marginBottom: 24 }}>
+      <div style={{ marginBottom: 32 }}>
         <Link href="/dashboard" className="btn-back">
           ← Volver al Dashboard
         </Link>
         <h1 className="page-title" style={{ marginTop: 12, marginBottom: 4 }}>
           📊 Estadísticas Generales
         </h1>
-        <p className="page-subtitle">
+        <p className="page-subtitle" style={{ marginBottom: 12 }}>
           Métricas globales consolidadas de servidores activos, partidas y mejores jugadores.
         </p>
+        <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+          Partidas jugadas en toda la comunidad: <strong style={{ color: '#ffffff', fontSize: '1.1rem' }}>{total.toLocaleString('es-ES')}</strong>
+        </div>
       </div>
 
-      {/* WINRATE GLOBAL DE LA COMUNIDAD */}
-      <section style={{ marginBottom: '3rem' }}>
-        <div className="card gs-totals-card">
-          <div className="gs-total-row">
-            <span>Partidas jugadas en toda la comunidad</span>
-            <strong>{total.toLocaleString('es-ES')}</strong>
+      {/* RENDIMIENTO POR BANDO */}
+      <section className="gs-section" style={{ marginBottom: '3rem' }}>
+        <h2 className="stats-section-title">Rendimiento por Bando</h2>
+        <div className="bando-grid">
+          {/* Aldea */}
+          <div className="bando-card">
+            <div className="bando-header">
+              <span className="bando-icon" style={{ color: '#22c55e' }}>🏡</span>
+              <span>Aldea</span>
+            </div>
+            <div className="bando-stats">
+              <div className="bando-stat-col">
+                <span className="bando-label">PARTIDAS</span>
+                <span className="bando-val">{gw.villagePlayed}</span>
+              </div>
+              <div className="bando-stat-col">
+                <span className="bando-label">WINRATE</span>
+                <span className="bando-val" style={{ color: '#22c55e' }}>{villageWr}%</span>
+              </div>
+              <div className="bando-stat-col">
+                <span className="bando-label">VICTORIAS</span>
+                <span className="bando-val" style={{ color: '#22c55e' }}>{gw.villageWon}</span>
+              </div>
+            </div>
+            <div className="bando-bar" style={{ background: '#22c55e' }} />
           </div>
 
-          {total > 0 ? (
-            <>
-              <div className="gs-split-bar">
-                <div className="gs-split-village" style={{ width: `${villagePct}%` }} />
-                <div className="gs-split-wolves" style={{ width: `${wolvesPct}%` }} />
-                <div className="gs-split-solo" style={{ width: `${soloPct}%` }} />
+          {/* Lobos */}
+          <div className="bando-card">
+            <div className="bando-header">
+              <span className="bando-icon" style={{ color: '#ef4444' }}>🌙</span>
+              <span>Lobos</span>
+            </div>
+            <div className="bando-stats">
+              <div className="bando-stat-col">
+                <span className="bando-label">PARTIDAS</span>
+                <span className="bando-val">{gw.wolvesPlayed}</span>
               </div>
-              <div className="gs-split-labels">
-                <div style={{ width: `${villagePct}%`, display: 'flex', justifyContent: Number(villagePct) < 15 ? 'flex-start' : 'center' }}>
-                  <span style={{ color: 'var(--accent-village)', whiteSpace: 'nowrap' }}>Aldea: {gw.villageWon} ({villagePct}%)</span>
-                </div>
-                <div style={{ width: `${wolvesPct}%`, display: 'flex', justifyContent: 'center' }}>
-                  <span style={{ color: 'var(--accent-wolf)', whiteSpace: 'nowrap' }}>Lobos: {gw.wolvesWon} ({wolvesPct}%)</span>
-                </div>
-                <div style={{ width: `${soloPct}%`, display: 'flex', justifyContent: Number(soloPct) < 15 ? 'flex-end' : 'center' }}>
-                  <span style={{ color: 'var(--accent-solo)', whiteSpace: 'nowrap' }}>Solitario: {gw.soloWon} ({soloPct}%)</span>
-                </div>
+              <div className="bando-stat-col">
+                <span className="bando-label">WINRATE</span>
+                <span className="bando-val" style={{ color: '#ef4444' }}>{wolvesWr}%</span>
               </div>
-            </>
-          ) : (
-            <p className="hint" style={{ marginTop: 10 }}>Todavía no se ha registrado ninguna partida.</p>
-          )}
+              <div className="bando-stat-col">
+                <span className="bando-label">VICTORIAS</span>
+                <span className="bando-val" style={{ color: '#ef4444' }}>{gw.wolvesWon}</span>
+              </div>
+            </div>
+            <div className="bando-bar" style={{ background: '#ef4444' }} />
+          </div>
+
+          {/* Solitario */}
+          <div className="bando-card">
+            <div className="bando-header">
+              <span className="bando-icon" style={{ color: '#a855f7' }}>✦</span>
+              <span>Solitario</span>
+            </div>
+            <div className="bando-stats">
+              <div className="bando-stat-col">
+                <span className="bando-label">PARTIDAS</span>
+                <span className="bando-val">{solitarioPlayed}</span>
+              </div>
+              <div className="bando-stat-col">
+                <span className="bando-label">WINRATE</span>
+                <span className="bando-val" style={{ color: '#a855f7' }}>{solitarioWr}%</span>
+              </div>
+              <div className="bando-stat-col">
+                <span className="bando-label">VICTORIAS</span>
+                <span className="bando-val" style={{ color: '#a855f7' }}>{solitarioWon}</span>
+              </div>
+            </div>
+            <div className="bando-bar" style={{ background: '#a855f7' }} />
+          </div>
+
+          {/* Amantes */}
+          <div className="bando-card">
+            <div className="bando-header">
+              <span className="bando-icon" style={{ color: '#ec4899' }}>💗</span>
+              <span>Amantes</span>
+            </div>
+            <div className="bando-stats">
+              <div className="bando-stat-col">
+                <span className="bando-label">PARTIDAS</span>
+                <span className="bando-val">{gw.loversPlayed}</span>
+              </div>
+              <div className="bando-stat-col">
+                <span className="bando-label">WINRATE</span>
+                <span className="bando-val" style={{ color: '#ec4899' }}>{loversWr}%</span>
+              </div>
+              <div className="bando-stat-col">
+                <span className="bando-label">VICTORIAS</span>
+                <span className="bando-val" style={{ color: '#ec4899' }}>{gw.loversWon}</span>
+              </div>
+            </div>
+            <div className="bando-bar" style={{ background: '#ec4899' }} />
+          </div>
         </div>
       </section>
 
-      {/* PARTIDAS POR MODO DE JUEGO */}
+      {/* RENDIMIENTO POR MODO */}
       {total > 0 && (
         <section style={{ marginBottom: '3rem' }}>
-          <div className="section-header">
-            <div className="dot dot-village" />
-            <h2>Partidas por Modo de Juego</h2>
-          </div>
-          <div className="mode-stats-grid">
+          <h2 className="stats-section-title" style={{ marginTop: '2.5rem' }}>Rendimiento por Modo</h2>
+          <p className="stats-section-sub" style={{ marginBottom: '1.2rem' }}>Partidas jugadas en cada modo de juego en la comunidad.</p>
+          <div className="modo-grid">
             {[
-              { name: '🐺 Clásico',  value: gw.classicMatches, color: '#f1c40f' },
-              { name: '🐌 Slow',     value: gw.slowMatches,    color: '#3498db' },
-              { name: '🤫 Silence',  value: gw.silenceMatches, color: '#95a5a6' },
-              { name: '🌫️ Weather', value: gw.weatherMatches, color: '#e67e22' },
-              { name: '🎭 Kaos',     value: gw.kaosMatches,    color: '#9b59b6' },
-              { name: '💳 Credit',   value: gw.creditMatches,  color: '#2ecc71' },
-            ].map((mode) => {
-              const pct = total > 0 ? ((mode.value / total) * 100).toFixed(1) : '0.0';
+              { name: 'Clásico', icon: '🐺', played: gw.classicMatches, color: '#f1c40f' },
+              { name: 'Slow', icon: '🐌', played: gw.slowMatches, color: '#3498db' },
+              { name: 'Silence', icon: '🤫', played: gw.silenceMatches, color: '#95a5a6' },
+              { name: 'Weather', icon: '🌫️', played: gw.weatherMatches, color: '#e67e22' },
+              { name: 'Kaos', icon: '🎭', played: gw.kaosMatches, color: '#9b59b6' },
+              { name: 'Credit', icon: '💳', played: gw.creditMatches, color: '#2ecc71' },
+            ].map((m) => {
+              const percentage = total > 0 ? ((m.played / total) * 100).toFixed(1) : '0.0';
               return (
-                <div key={mode.name} className="card mode-stat-card" style={{ borderLeft: `3px solid ${mode.color}` }}>
-                  <div className="mode-stat-header">
-                    <span className="mode-stat-name">{mode.name}</span>
-                    <span className="mode-stat-pct" style={{ color: mode.color }}>{pct}%</span>
+                <div key={m.name} className="bando-card">
+                  <div className="bando-header">
+                    <span className="bando-icon" style={{ color: m.color }}>{m.icon}</span>
+                    <span>{m.name}</span>
                   </div>
-                  <div className="mode-stat-value">{mode.value.toLocaleString('es-ES')}</div>
-                  <div className="mode-stat-bar-bg">
-                    <div className="mode-stat-bar-fill" style={{ width: `${pct}%`, background: mode.color }} />
+                  <div className="bando-stats">
+                    <div className="bando-stat-col">
+                      <span className="bando-label">PARTIDAS</span>
+                      <span className="bando-val">{m.played}</span>
+                    </div>
+                    <div className="bando-stat-col">
+                      <span className="bando-label">% DEL TOTAL</span>
+                      <span className="bando-val" style={{ color: m.color }}>{percentage}%</span>
+                    </div>
                   </div>
+                  <div className="bando-bar" style={{ background: m.color }} />
                 </div>
               );
             })}
