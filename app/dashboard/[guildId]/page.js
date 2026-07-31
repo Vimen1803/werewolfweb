@@ -39,8 +39,8 @@ export default async function AdminOverviewPage({ params }) {
   const solitarioWon = tannerWon + wbWon;
   const solitarioWr = solitarioPlayed > 0 ? Math.round((solitarioWon / solitarioPlayed) * 100) : 0;
 
-  const loversPlayed = globalStats.lovers_matches || 0;
-  const loversWon = globalStats.lovers_won || 0;
+  const loversPlayed = globalStats.bandos_played?.lovers ?? (globalStats.lovers_matches || 0);
+  const loversWon = globalStats.bandos_won?.lovers ?? (globalStats.lovers_won || 0);
   const loversWr = loversPlayed > 0 ? Math.round((loversWon / loversPlayed) * 100) : 0;
 
   const rolesPlayedMap = globalStats.rol_played || {};
