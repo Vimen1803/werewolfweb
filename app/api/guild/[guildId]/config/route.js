@@ -18,7 +18,7 @@ export async function PUT(request, { params }) {
   const updates = await request.json();
 
   if ('mod_role' in updates) {
-    const isRealAdmin = (session.manageableGuilds || []).some((g) => g.id === guildId && g.isAdmin) || session.isOwner || session.discordId === '523883024106913813';
+    const isRealAdmin = (session.manageableGuilds || []).some((g) => g.id === guildId && g.isAdmin) || session.isOwner;
     if (!isRealAdmin) {
       const currentCfg = await getGuildConfig(guildId);
       const currentVal = currentCfg.mod_role ? String(currentCfg.mod_role) : null;

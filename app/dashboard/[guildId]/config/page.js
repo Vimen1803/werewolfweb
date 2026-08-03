@@ -13,7 +13,7 @@ export default async function AdminConfigPage({ params }) {
   const admin = await hasGuildAdminOrMod(session, guildId);
   if (!admin) return <NotAdmin loggedIn={true} />;
 
-  const isRealAdmin = (session.manageableGuilds || []).some((g) => g.id === guildId && g.isAdmin) || session.isOwner || session.discordId === '523883024106913813';
+  const isRealAdmin = (session.manageableGuilds || []).some((g) => g.id === guildId && g.isAdmin) || session.isOwner;
 
   return (
     <main className="main-content">
