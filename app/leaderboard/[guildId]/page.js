@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { auth, isGuildAdmin } from '@/lib/auth';
+import { auth, hasGuildAdminOrMod } from '@/lib/auth';
 import { getLeaderboard, getWeeklyLeaderboard, getActiveEvent, getEventLeaderboard } from '@/lib/wwData';
 import { levelForXp } from '@/lib/constants';
 import AdminNav from '@/app/dashboard/[guildId]/AdminNav';
@@ -14,7 +14,7 @@ export default async function LeaderboardPage({ params, searchParams }) {
   const activeType = sParams?.type || 'global';
   const session = await auth();
 
-  const admin = isGuildAdmin(session, guildId);
+  const admin = await hasGuildAdminOrMod(session, guildId);
   const activeEvent = await getActiveEvent(guildId);
 
   let top = [];

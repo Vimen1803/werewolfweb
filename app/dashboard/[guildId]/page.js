@@ -1,4 +1,4 @@
-import { auth, isGuildAdmin } from '@/lib/auth';
+import { auth, hasGuildAdminOrMod } from '@/lib/auth';
 import { getGuildConfig, getLeaderboard, getBlacklist, getGlobalStats, getWeeklyLeaderboard, getEventLeaderboard } from '@/lib/wwData';
 import AdminNav from './AdminNav';
 import NotAdmin from './NotAdmin';
@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export default async function AdminOverviewPage({ params }) {
   const { guildId } = await params;
   const session = await auth();
-  const admin = session ? isGuildAdmin(session, guildId) : false;
+  const admin = session ? await hasGuildAdminOrMod(session, guildId) : false;
 
   const cfg = await getGuildConfig(guildId);
   const activeEvent = cfg.active_event && cfg.active_event.active ? cfg.active_event : null;

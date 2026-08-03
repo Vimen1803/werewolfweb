@@ -1,4 +1,4 @@
-import { auth, isGuildAdmin } from '@/lib/auth';
+import { auth, hasGuildAdminOrMod } from '@/lib/auth';
 import { getGuildConfig } from '@/lib/wwData';
 import { getGuildChannels, getGuildRoles } from '@/lib/discord';
 import { ROLE_XP_ACTIONS } from '@/lib/data/xpConfig';
@@ -11,7 +11,7 @@ export default async function ConfigPage({ params }) {
   const { guildId } = await params;
   const session = await auth();
 
-  const admin = isGuildAdmin(session, guildId);
+  const admin = await hasGuildAdminOrMod(session, guildId);
   const [cfg, channels, roles] = await Promise.all([
     getGuildConfig(guildId),
     getGuildChannels(guildId),

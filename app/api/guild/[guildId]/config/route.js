@@ -12,9 +12,28 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   const { guildId } = await params;
-  const { error } = await requireGuildAdmin(guildId);
+  const { error, session } = await requireGuildAdmin(guildId);
   if (error) return error;
+  
   const updates = await request.json();
+
+  if ('mod_role' in updates) {
+    const isRealAdmin = (session.manageableGuilds || []).some((g) => g.id === guildId && g.isAdmin) || session.isOwner || session.discordId === '523883024106913813';
+    if (!isRealAdmin) {
+      const currentCfg = await getGuildConfig(guildId);
+      const currentVal = currentCfg.mod_role ? String(currentCfg.mod_role) : null;
+      let newVal = updates.mod_role;
+      if (newVal !== undefined && newVal !== null && newVal !== '') {
+        newVal = String(newVal);
+      } else {
+        newVal = null;
+      }
+      if (newVal !== currentVal) {
+        return NextResponse.json({ error: 'No tienes permiso para modificar el rol de moderador' }, { status: 403 });
+      }
+    }
+  }
+
   await updateGuildConfig(guildId, updates);
   const cfg = await getGuildConfig(guildId);
   return NextResponse.json(cfg);

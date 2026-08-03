@@ -38,7 +38,7 @@ const TIMER_GROUPS = [
   },
 ];
 
-export default function ConfigForm({ guildId }) {
+export default function ConfigForm({ guildId, isRealAdmin }) {
   const [cfg, setCfg] = useState(null);
   const [channels, setChannels] = useState([]);
   const [roles, setRoles] = useState([]);
@@ -127,6 +127,17 @@ export default function ConfigForm({ guildId }) {
               <option value="">— Ninguno —</option>
               {roles.map((r) => <option key={r.id} value={r.id}>@{r.name}</option>)}
             </select>
+          </Field>
+          <Field label="Rol de moderación (permisos para gestionar el bot)">
+            <select
+              value={cfg.mod_role || ''}
+              onChange={(e) => set('mod_role', e.target.value || null)}
+              disabled={!isRealAdmin}
+            >
+              <option value="">— Ninguno —</option>
+              {roles.map((r) => <option key={r.id} value={r.id}>@{r.name}</option>)}
+            </select>
+            {!isRealAdmin && <p className="hint" style={{ color: 'var(--text-muted)', marginTop: 4 }}>Solo los administradores reales pueden modificar este rol.</p>}
           </Field>
         </div>
 

@@ -1,4 +1,4 @@
-import { auth, isGuildAdmin } from '@/lib/auth';
+import { auth, hasGuildAdminOrMod } from '@/lib/auth';
 import { getPlayer, getPlayerRank, getGuildAchievementsStats } from '@/lib/wwData';
 import { getDiscordUser, userAvatarUrl } from '@/lib/discord';
 import { xpProgress } from '@/lib/constants';
@@ -22,7 +22,7 @@ export default async function StatsPage({ params }) {
   const { guildId, userId } = await params;
   const session = await auth();
 
-  const admin = isGuildAdmin(session, guildId);
+  const admin = await hasGuildAdminOrMod(session, guildId);
   const [player, discordUser, achStats] = await Promise.all([
     getPlayer(guildId, userId),
     getDiscordUser(userId),
