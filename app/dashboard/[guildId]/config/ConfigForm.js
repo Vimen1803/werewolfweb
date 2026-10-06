@@ -38,6 +38,15 @@ const TIMER_GROUPS = [
   },
 ];
 
+const GAME_MODES = [
+  { id: 'slow', label: 'Modo Pausado', emoji: '🐌' },
+  { id: 'silence', label: 'Silence', emoji: '🤫' },
+  { id: 'weather', label: 'Weather', emoji: '🌫️' },
+  { id: 'kaos', label: 'Kaos', emoji: '🎭' },
+  { id: 'credit', label: 'Credit', emoji: '💳' },
+  { id: 'halloween', label: 'Halloween', emoji: '🎃' },
+];
+
 export default function ConfigForm({ guildId, isRealAdmin }) {
   const [cfg, setCfg] = useState(null);
   const [channels, setChannels] = useState([]);
@@ -84,10 +93,12 @@ export default function ConfigForm({ guildId, isRealAdmin }) {
   async function save() {
     setStatus('saving');
     try {
+      const updates = { ...cfg };
+      if (!isRealAdmin) delete updates.gamemode;
       const res = await fetch(`/api/guild/${guildId}/config`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(cfg),
+        body: JSON.stringify(updates),
       });
       if (!res.ok) throw new Error();
       const updated = await res.json();
@@ -146,6 +157,21 @@ export default function ConfigForm({ guildId, isRealAdmin }) {
           <Toggle label="Mutear durante la noche" checked={cfg.mute_noche} onChange={(v) => set('mute_noche', v)} />
           <Toggle label="Mutear durante la votación" checked={cfg.mute_votacion} onChange={(v) => set('mute_votacion', v)} />
           <Toggle label="Mutear a los jugadores muertos" checked={cfg.mute_muertos} onChange={(v) => set('mute_muertos', v)} />
+        </div>
+
+        <div className="card block span-2">
+          <h3>Modos de juego</h3>
+          <p className="hint">Activa los modos que se podrán iniciar en este servidor. El modo Clásico siempre está disponible.</p>
+          {GAME_MODES.map((mode) => (
+            <Toggle
+              key={mode.id}
+              label={`${mode.emoji} ${mode.label} — ${cfg.gamemode?.[mode.id] !== false ? 'Activado' : 'Desactivado'}`}
+              checked={cfg.gamemode?.[mode.id] !== false}
+              disabled={!isRealAdmin}
+              onChange={(enabled) => set('gamemode', { ...(cfg.gamemode || {}), [mode.id]: enabled })}
+            />
+          ))}
+          {!isRealAdmin && <p className="hint" style={{ marginTop: 8 }}>Solo los administradores del servidor pueden cambiar estos modos.</p>}
         </div>
 
         <div className="card block span-2">
@@ -255,14 +281,15 @@ function Field({ label, children }) {
   );
 }
 
-function Toggle({ label, checked, onChange }) {
+function Toggle({ label, checked, onChange, disabled = false }) {
   return (
     <label className="toggle">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <input type="checkbox" checked={checked} disabled={disabled} onChange={(e) => onChange(e.target.checked)} />
       <span>{label}</span>
       <style jsx>{`
         .toggle { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 0.88rem; cursor: pointer; }
         .toggle input { width: 16px; height: 16px; accent-color: var(--accent-wolf); }
+        .toggle input:disabled { opacity: 0.5; cursor: not-allowed; }
       `}</style>
     </label>
   );

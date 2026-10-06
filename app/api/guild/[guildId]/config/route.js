@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requireGuildAdmin } from '@/lib/apiGuard';
+import { isGuildAdmin } from '@/lib/auth';
 import { getGuildConfig, updateGuildConfig } from '@/lib/wwData';
 
 export async function GET(request, { params }) {
@@ -16,6 +17,10 @@ export async function PUT(request, { params }) {
   if (error) return error;
   
   const updates = await request.json();
+
+  if ('gamemode' in updates && !isGuildAdmin(session, guildId)) {
+    return NextResponse.json({ error: 'Solo un administrador del servidor puede cambiar los modos de juego' }, { status: 403 });
+  }
 
   if ('mod_role' in updates) {
     const isRealAdmin = (session.manageableGuilds || []).some((g) => g.id === guildId && g.isAdmin) || session.isOwner;
