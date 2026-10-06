@@ -15,7 +15,7 @@ export default function ModosDocPage() {
 
       <div className="card fade-in" style={{ borderLeft: '3px solid var(--accent-gold)', marginBottom: '2.5rem' }}>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>
-          💡 <strong style={{ color: 'var(--text-primary)' }}>XP:</strong> Jugar cualquier modo alternativo al clásico incrementa tus estadísticas, sin embargo, <strong>no se suma XP</strong> en modos alternativos para garantizar el equilibrio del ranking.
+          💡 <strong style={{ color: 'var(--text-primary)' }}>XP:</strong> Los modos alternativos incrementan tus estadísticas. Halloween también otorga XP global y semanal; los demás modos especiales conservan sus reglas de XP habituales.
         </p>
       </div>
 
@@ -88,6 +88,17 @@ export default function ModosDocPage() {
                 'Los votos consumen entre 1 y el total de tus créditos restantes.',
                 'Saltar la votación (SKIP) no consume créditos.',
                 'Si te quedas sin créditos, no podrás volver a votar en el resto de la partida.'
+              ]
+            },
+            {
+              name: '🎃 Halloween',
+              command: ',ww start halloween',
+              desc: 'Modo temporal con 15 roles de Halloween para grupos de 5 a 15 jugadores. Consulta el changelog para abrir la guía completa de roles y composiciones.',
+              color: '#e67e22',
+              details: [
+                'Tres roles de Lobos, dos Solitarios y diez roles de Aldea en el catálogo.',
+                'Otorga XP global y semanal y cuenta para las estadísticas y logros existentes.',
+                'La guía y las probabilidades están enlazadas desde el changelog.'
               ]
             }
           ].map((mode) => (

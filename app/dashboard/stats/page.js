@@ -46,7 +46,7 @@ export default async function GeneralStatsPage() {
     tannerPlayed: 0, tannerWon: 0,
     loversPlayed: 0, loversWon: 0,
     classicMatches: 0, slowMatches: 0, silenceMatches: 0,
-    weatherMatches: 0, kaosMatches: 0, creditMatches: 0
+    weatherMatches: 0, kaosMatches: 0, creditMatches: 0, halloweenMatches: 0
   };
   const total = gw.totalMatches;
   
@@ -186,6 +186,7 @@ export default async function GeneralStatsPage() {
               { name: 'Weather', icon: '🌫️', played: gw.weatherMatches, color: '#e67e22' },
               { name: 'Kaos', icon: '🎭', played: gw.kaosMatches, color: '#9b59b6' },
               { name: 'Credit', icon: '💳', played: gw.creditMatches, color: '#2ecc71' },
+              { name: 'Halloween', icon: '🎃', played: gw.halloweenMatches, color: '#e67e22' },
             ].map((m) => {
               const percentage = total > 0 ? ((m.played / total) * 100).toFixed(1) : '0.0';
               return (

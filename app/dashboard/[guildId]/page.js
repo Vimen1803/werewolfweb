@@ -59,6 +59,7 @@ export default async function AdminOverviewPage({ params }) {
     { name: 'Weather', icon: '🌫️', played: globalStats.gamemode_played?.weather ?? (globalStats.weather_matches || 0), color: '#e67e22' },
     { name: 'Kaos', icon: '🎭', played: globalStats.gamemode_played?.kaos ?? (globalStats.kaos_matches || 0), color: '#9b59b6' },
     { name: 'Credit', icon: '💳', played: globalStats.gamemode_played?.credit ?? (globalStats.credit_matches || 0), color: '#2ecc71' },
+    { name: 'Halloween', icon: '🎃', played: globalStats.gamemode_played?.halloween ?? (globalStats.halloween_matches || 0), color: '#e67e22' },
   ];
 
   return (

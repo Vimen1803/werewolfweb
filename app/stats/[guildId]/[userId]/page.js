@@ -203,6 +203,7 @@ export default async function StatsPage({ params }) {
             { name: 'Weather', icon: '🌫️', played: doc.weather_played, won: doc.weather_won, color: '#e67e22' },
             { name: 'Kaos', icon: '🎭', played: doc.kaos_played, won: doc.kaos_won, color: '#9b59b6' },
             { name: 'Credit', icon: '💳', played: doc.credit_played, won: doc.credit_won, color: '#2ecc71' },
+            { name: 'Halloween', icon: '🎃', played: doc.halloween_played, won: doc.halloween_won, color: '#e67e22' },
           ].map((m) => {
             const played = m.played || 0;
             const won = m.won || 0;
